@@ -1,0 +1,46 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editor and IDE state
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+.direnv/
+
+# Logs and crash dumps
+*.log
+erl_crash.dump
+
+# Nix build outputs
+result
+result-*
+
+# Zig build outputs and downloaded packages
+**/.zig-cache/
+**/zig-out/
+/apps/desktop/zig-pkg/
+
+# Elixir/Mix generated files
+**/_build/
+**/cover/
+**/deps/
+**/doc/
+**/.elixir_ls/
+**/.lexical/
+
+# Rust build outputs
+**/target/
+
+# General temporary files
+*.tmp
+*.temp
+*.bak
