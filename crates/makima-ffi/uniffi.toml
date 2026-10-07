@@ -1,0 +1,17 @@
+[bindings.swift]
+module_name = "MakimaCoreBindings"
+ffi_module_name = "MakimaCoreFFI"
+ffi_module_filename = "MakimaCoreFFI"
+
+# Typed IDs: Rust's AgentId / WorkspaceId become Swift's AgentID / WorkspaceID
+# (defined in apps/macos/Sources/MakimaCoreBindings/IDs.swift) instead of
+# strings.
+[bindings.swift.custom_types.AgentId]
+type_name = "AgentID"
+lift = "AgentID(rawValue: {})"
+lower = "{}.rawValue"
+
+[bindings.swift.custom_types.WorkspaceId]
+type_name = "WorkspaceID"
+lift = "WorkspaceID(rawValue: {})"
+lower = "{}.rawValue"

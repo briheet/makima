@@ -1,0 +1,20 @@
+---
+source: crates/makima-tui/src/render.rs
+expression: "text(&state, 80, 16)"
+---
+  1:auth-refactor*   2:fix-ci!                                           makima
+┏ ◆ lead · claude ━━━━━━━━━━━━━━ working ● ┓┌ 1 · claude 2 ───── needs input ? ┐
+┃                                          ┃│                                  │
+┃                                          ┃│                                  │
+┃                                          ┃│                                  │
+┃                                          ┃│                                  │
+┃                                          ┃│                                  │
+┃                                          ┃└──────────────────────────────────┘
+┃                                          ┃┌ 2 · claude 3 ──────────── done ✓ ┐
+┃                                          ┃│                                  │
+┃                                          ┃│                                  │
+┃                                          ┃│                                  │
+┃                                          ┃│                                  │
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛└──────────────────────────────────┘
+ @all ▸ summarise your changes
+ TALK  auth-refactor │ ● 1 working  ? 1 waiting  ✓ 1 done ^Space ? keys │ 14:02

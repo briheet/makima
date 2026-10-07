@@ -1,0 +1,27 @@
+---
+source: crates/makima-core/tests/snapshots.rs
+expression: "table(&DesignTokens::derive(&github_light(), TokenOptions::default()))"
+---
+surface.base         #ffffff
+surface.panel        #f5f5f5
+surface.elevated     #ebebeb
+surface.inset        #f5f5f5
+border.subtle        #edeeee
+border.default       #e1e1e2
+border.strong        #c8c9cb
+border.focus         #0969da
+text.primary         #1f2328
+text.secondary       #5a5d61
+text.tertiary        #8a8d90
+text.disabled        #b0b2b4
+text.on-accent       #ffffff
+interactive.hover    #f2f3f3
+interactive.pressed  #ebebec
+interactive.selected #e6e6e7
+accent.base          #0969da
+accent.muted         #d6e5fb
+status.running       #116329
+status.attention     #4d2d00
+status.danger        #cf222e
+status.info          #0969da
+status.neutral       #8a8d90

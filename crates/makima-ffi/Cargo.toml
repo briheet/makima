@@ -1,0 +1,27 @@
+[package]
+name = "makima-ffi"
+description = "UniFFI surface of the Makima core, consumed by the Swift app."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lib]
+crate-type = ["staticlib", "lib"]
+
+[dependencies]
+makima-core.workspace = true
+makima-store.workspace = true
+makima-tui.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-oslog.workspace = true
+tracing-subscriber.workspace = true
+uniffi.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[lints]
+workspace = true

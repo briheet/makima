@@ -1,0 +1,34 @@
+---
+source: crates/makima-tui/src/flow.rs
+expression: screen_text(&flow)
+---
+  ╭ new work · fix ──────────────────────────────────────────────────────────╮
+  │                                                                          │
+  │   something is broken                                                    │
+  │                                                                          │
+  │     WHERE                                                                │
+  │     folder    ~/code/makima                                              │
+  │                                                                          │
+  │     name      makima                                                     │
+  │                                                                          │
+  │     TEAM                                                                 │
+  │     lead      Claude Code                                                │
+  │                                                                          │
+  │     children  1                                                          │
+  │                                                                          │
+  │     they run  same as lead                                               │
+  │                                                                          │
+  │     permits   default                                                    │
+  │                                                                          │
+  │     BRIEF                                                                │
+  │   ┃ What's broken?                                                       │
+  │   ┃   login loops on Safari after the session expires                    │
+  │                                                                          │
+  │     How to reproduce                                                     │
+  │       steps                                                              │
+  │                                                                          │
+  │      start ⏎                                                             │
+  │                                                                          │
+  │   ⏎ next · ↑↓ fields · esc back                                          │
+  │                                                                          │
+  ╰──────────────────────────────────────────────────────────────────────────╯

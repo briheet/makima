@@ -1,0 +1,30 @@
+[package]
+name = "makima-store"
+description = "Where Makima keeps work: XDG paths, one SQLite database per work, and the index of all work."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+makima-core.workspace = true
+etcetera.workspace = true
+hex.workspace = true
+jiff.workspace = true
+rusqlite.workspace = true
+rusqlite_migration.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+walkdir.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+
+[[bench]]
+name = "store"
+harness = false
+
+[lints]
+workspace = true

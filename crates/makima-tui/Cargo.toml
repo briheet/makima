@@ -1,0 +1,24 @@
+[package]
+name = "makima-tui"
+description = "Makima's terminal chrome: layout, rendering to ANSI, the talk line and command parsing."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+makima-core.workspace = true
+nucleo-matcher.workspace = true
+ratatui.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+insta.workspace = true
+
+[[bench]]
+name = "chrome"
+harness = false
+
+[lints]
+workspace = true

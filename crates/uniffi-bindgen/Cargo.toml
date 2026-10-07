@@ -1,0 +1,18 @@
+[package]
+name = "uniffi-bindgen"
+description = "In-workspace uniffi-bindgen-swift, locked to the workspace's uniffi version."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[[bin]]
+name = "uniffi-bindgen-swift"
+path = "src/main.rs"
+
+[dependencies]
+uniffi = { workspace = true, features = ["cli"] }
+
+[lints]
+workspace = true

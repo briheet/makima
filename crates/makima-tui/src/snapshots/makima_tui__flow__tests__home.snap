@@ -1,0 +1,21 @@
+---
+source: crates/makima-tui/src/flow.rs
+expression: screen_text(&flow)
+---
+             ███╗   ███╗ █████╗ ██╗  ██╗██╗███╗   ███╗ █████╗
+             ████╗ ████║██╔══██╗██║ ██╔╝██║████╗ ████║██╔══██╗
+             ██╔████╔██║███████║█████╔╝ ██║██╔████╔██║███████║
+             ██║╚██╔╝██║██╔══██║██╔═██╗ ██║██║╚██╔╝██║██╔══██║
+             ██║ ╚═╝ ██║██║  ██║██║  ██╗██║██║ ╚═╝ ██║██║  ██║
+             ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝
+
+             run teams of coding agents side by side
+
+             ▸ Quick start       one agent in a folder · ⏎ ⏎ to go
+               From a template   fix
+               Build your own    coming soon
+
+             RECENT
+               1  login          fix      ~/code/app
+
+             ↑↓ move · ⏎ open · 1-9 recent · q quick · t templates

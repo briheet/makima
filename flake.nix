@@ -28,9 +28,16 @@
           pkgs = legacyPackages.${system};
         in
         {
-          default = pkgs.mkShell {
+          # No C compiler wrapper: Swift comes from the system toolchain
+          # (Xcode or Command Line Tools), and nix's cc/SDK env breaks it.
+          default = pkgs.mkShellNoCC {
             packages = with pkgs; [
-              beam28Packages.elixir_1_20
+              just
+              cargo
+              rustc
+              clippy
+              rustfmt
+              rust-analyzer
             ];
           };
         }

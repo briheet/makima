@@ -1,0 +1,34 @@
+---
+source: crates/makima-tui/src/render.rs
+expression: "text(&state, 100, 30)"
+---
+                                                                                             makima
+
+
+
+
+
+                    ███╗   ███╗ █████╗ ██╗  ██╗██╗███╗   ███╗ █████╗
+                    ████╗ ████║██╔══██╗██║ ██╔╝██║████╗ ████║██╔══██╗
+                    ██╔████╔██║███████║█████╔╝ ██║██╔████╔██║███████║
+                    ██║╚██╔╝██║██╔══██║██╔═██╗ ██║██║╚██╔╝██║██╔══██║
+                    ██║ ╚═╝ ██║██║  ██║██║  ██╗██║██║ ╚═╝ ██║██║  ██║
+                    ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝
+
+                    run teams of coding agents side by side
+
+                    ┌──────────────────────────────────────────────────────────┐
+                    │ makima>                                                  │
+                    └──────────────────────────────────────────────────────────┘
+
+                    new auth --lead claude --children 3    start a team
+                    new "fix ci" --lead shell              one shell
+                    help                                   all commands
+                    ? in Makima's keys                     all keys
+
+
+
+
+
+
+ COMMAND  │ ● 1 working  ? 1 waiting  ✓ 1 done                                ^Space ? keys │ 14:02

@@ -1,0 +1,93 @@
+# An example Makima config: every section, with values worth trying.
+# `just` runs the app with this file; copy it to ~/.config/makima/config.toml
+# to make it yours. A test parses it, so it always matches what Makima reads.
+
+[appearance]
+mode = "system"                 # system | light | dark
+theme = { light = "GitHub Light Default", dark = "Vesper" }   # or: theme = "Rose Pine"
+# accent = "#7aa2f7"            # default: the theme's cursor colour
+contrast = 0.5                  # 0 = softest, 1 = strongest
+
+[terminal]
+# font-family = "JetBrains Mono"
+font-size = 14                  # ⌘+ ⌘− ⌘0 zoom while running
+padding-x = 0
+padding-y = 0
+unfocused-dim = 0.2             # dim unfocused terminals; 0 turns it off
+cursor-style = "block"          # block | bar | underline (programs may set their own)
+cursor-blink = false            # true makes it blink
+# shell = "nu"                  # shell panes and the shell tool; default: Ghostty's
+                                # `command`, else your login shell
+
+[keys]
+style = "helix"                 # helix: leader for NOR, i to type · tmux: leader then one key
+leader = "ctrl-space"           # ctrl-space | shift-esc | ctrl-] | ctrl-o
+navigate = "ctrl"               # ctrl | alt | off: Ctrl+h/j/k/l moves between lead and children
+
+[work]
+roots = ["~"]                   # where the folder picker looks for repos
+depth = 5                       # how many folders down
+lead = "claude"                 # the preset new work's lead runs
+
+[permissions]
+# How much agents may do without asking:
+#   manual | accept-edits | plan | auto | bypass (Claude's --dangerously-skip-permissions)
+# Unset leaves each program to its own default.
+default = "accept-edits"
+agents = { codex = "plan", claude-plan = "plan" }   # per preset, replacing the default
+
+[voice]
+provider = "apple"              # apple (on-device) | openai | none
+# language = "en-US"
+# For provider = "openai", any OpenAI-compatible API (OpenAI, Groq, local Whisper):
+model = "gpt-4o-transcribe"
+base-url = "https://api.openai.com/v1"
+api-key-env = "OPENAI_API_KEY"  # or the Keychain: security add-generic-password -s makima -a openai -w
+
+[storage]
+# root = "~/notes/makima"       # default: ~/.local/share/makima
+
+# Your own agent presets (or replace shell, claude, codex by id). A built-in
+# adapter (claude-code, codex) knows its program's sessions and flags; it
+# starts in plan mode through [permissions] above.
+[[agents]]
+id = "claude-plan"
+label = "Claude (plan first)"
+adapter = "claude-code"
+
+# Any other program is described by its flags.
+[[agents]]
+id = "aider"
+label = "Aider"
+command = "aider"
+prompt-arg = true
+permission-flags = { auto = "--yes", bypass = "--yes-always" }
+
+# Tools open in a floating window over a work, in its folder. After
+# Ctrl+Space: g (git), s (shell), e (editor), f (files), o (all of them).
+[[tools]]
+id = "top"
+label = "btop"
+command = "btop"
+key = "p"                       # ^Space space p (keys Makima already uses are rejected)
+size = 1.0                      # full body
+keep = false                    # start fresh each time
+
+# Your own templates (or replace feat, fix, refactor, research, review, docs).
+[[templates]]
+id = "spike"
+label = "Spike"
+kind = "research"
+description = "try an idea quickly, then report"
+lead = "claude"
+children = 2
+child = "claude"
+roles = ["implementer", "researcher"]
+permission = "auto"
+questions = ["The idea", "What would prove it works?"]
+# What each agent is told when the work starts. Placeholders: {name} {kind}
+# {folder} {brief} {plan} {team} {protocol} (how the team works through
+# plan.md), and for children {number} {role} {duty}. Without these,
+# built-in templates use prompts written for their kind.
+lead-prompt = "You lead the spike \"{name}\" in {folder}. Read {brief}. Build the smallest thing that answers the brief's question, then report what you learned. {protocol}"
+child-prompt = "You are child {number}, the {role}, on the spike \"{name}\". {duty} Your task will be under \"## child {number}\" in {plan}. Reply only \"ready\" until told to go."

@@ -1,0 +1,28 @@
+---
+source: crates/makima-tui/src/render.rs
+expression: "text(&state, 80, 24)"
+---
+                                                                         makima
+
+
+          ███╗   ███╗ █████╗ ██╗  ██╗██╗███╗   ███╗ █████╗
+          ████╗ ████║┌ keys in NOR (^Space; i to type) ───┐
+          ██╔████╔██║│ i        back to the agent         │
+          ██║╚██╔╝██║│ [        previous work             │
+          ██║ ╚═╝ ██║│ ]        next work                 │
+          ╚═╝     ╚═╝│ space b  pick work                 │
+                     │ space n  new work                  │
+          run teams o│ space c  new child                 │
+                     │ space a  message everyone          │
+          ┌──────────│ space v  speak                     │──────────┐
+          │ makima>  │ space x  close agent               │          │
+          └──────────│ space z  zoom agent                │──────────┘
+                     │ space o  tools                     │
+          new auth --│ :        command                   │am
+          new "fix ci│ ?        all keys                  │
+          help       └────────────────────────────────────┘ds
+          ? in Makima's keys                     all keys
+
+
+
+ COMMAND  │ ● 1 working  ? 1 waiting  ✓ 1 done            ^Space ? keys │ 14:02

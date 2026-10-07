@@ -1,0 +1,56 @@
+---
+source: crates/makima-core/tests/snapshots.rs
+expression: config
+---
+Config {
+    appearance: Appearance {
+        mode: System,
+        theme: Pair {
+            light: "GitHub Light Default",
+            dark: "Vesper",
+        },
+        accent: None,
+        contrast: 0.5,
+    },
+    terminal: Terminal {
+        font_family: None,
+        font_size: 14.0,
+        padding_x: 0,
+        padding_y: 0,
+        unfocused_dim: 0.2,
+        cursor_style: Block,
+        cursor_blink: false,
+        shell: None,
+    },
+    keys: Keys {
+        style: Helix,
+        leader: CtrlSpace,
+        navigate: Ctrl,
+    },
+    storage: Storage {
+        root: None,
+    },
+    work: WorkSettings {
+        roots: [
+            "~",
+        ],
+        depth: 5,
+        lead: PresetId(
+            "claude",
+        ),
+    },
+    voice: Voice {
+        provider: Apple,
+        language: None,
+        model: "gpt-4o-transcribe",
+        base_url: "https://api.openai.com/v1",
+        api_key_env: "OPENAI_API_KEY",
+    },
+    permissions: Permissions {
+        default: None,
+        agents: {},
+    },
+    agents: [],
+    templates: [],
+    tools: [],
+}
