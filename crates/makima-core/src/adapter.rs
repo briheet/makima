@@ -49,6 +49,13 @@ pub trait AgentAdapter: fmt::Debug + Send + Sync {
     /// The flags that start the program in `mode`, if it has any.
     fn permission_flags(&self, mode: PermissionMode) -> Option<&str>;
 
+    /// Whether agents running it can message each other by session name
+    /// (Claude Code's cross-session `SendMessage`), given
+    /// [`Launch::name`].
+    fn messages_peers(&self) -> bool {
+        false
+    }
+
     /// Whether the program understands any permission mode.
     fn supports_permissions(&self) -> bool {
         PermissionMode::ALL
@@ -146,19 +153,37 @@ impl Default for ClaudeCode {
     }
 }
 
+impl ClaudeCode {
+    /// Lets teammates' messages in whatever each side's permission mode;
+    /// by default a bypassing session holds messages from one that isn't.
+    const ACCEPT_MESSAGES: &'static str = r#"{"crossSessionInbound":"accept"}"#;
+}
+
 impl AgentAdapter for ClaudeCode {
     fn command(&self) -> Option<&str> {
         Some(&self.command)
     }
 
     fn args(&self, launch: &Launch) -> Vec<String> {
-        Self::FLAGS.args(
-            launch,
-            launch.permission.and_then(|m| self.permission_flags(m)),
-        )
+        let mut args = Vec::new();
+        if let Some(name) = &launch.name {
+            args.extend([
+                "--name".to_owned(),
+                name.clone(),
+                "--settings".to_owned(),
+                Self::ACCEPT_MESSAGES.to_owned(),
+            ]);
+        }
+        let permission = launch.permission.and_then(|m| self.permission_flags(m));
+        args.extend(Self::FLAGS.args(launch, permission));
+        args
     }
 
     fn pins_sessions(&self) -> bool {
+        true
+    }
+
+    fn messages_peers(&self) -> bool {
         true
     }
 
@@ -342,6 +367,27 @@ mod tests {
             Some("claude --resume 0199-abc")
         );
         assert_eq!(claude.sessions(), Some(SessionStore::ClaudeCode));
+    }
+
+    #[test]
+    fn named_claude_sessions_accept_teammates_messages() {
+        let launch = Launch::new()
+            .with_session("s1")
+            .with_name(Some("auth-1a2b-child-2".into()));
+        assert_eq!(
+            ClaudeCode::default().command_line(&launch).as_deref(),
+            Some(
+                "claude --name auth-1a2b-child-2 --settings '{\"crossSessionInbound\":\"accept\"}' \
+                 --session-id s1"
+            )
+        );
+        assert_eq!(
+            Codex::default().command_line(&launch).as_deref(),
+            Some("codex"),
+            "codex can't message, so takes no name"
+        );
+        assert!(ClaudeCode::default().messages_peers());
+        assert!(!Codex::default().messages_peers());
     }
 
     #[test]

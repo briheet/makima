@@ -360,7 +360,7 @@ impl Core {
             }
             Err(error) => return Err(error.into()),
         }
-        let started = self.restart_team(&mut registry, work_id, &saved_agents);
+        let started = self.restart_team(&mut registry, work_id, &row.name, &saved_agents);
         let agents = match started {
             Ok(agents) => agents,
             Err(error) => {
@@ -455,6 +455,19 @@ impl Core {
                     .to_string()
             },
         );
+        // Session names, so teammates can message each other by name.
+        let name_of = |position: usize| core::session_name(&request.name, workspace_id, position);
+        let lead_name = name_of(0);
+        let peers = std::iter::once(format!("lead {lead_name}"))
+            .chain(request.children.iter().enumerate().map(|(index, child)| {
+                let role = core::AgentRole::from(child.role.clone());
+                format!("child {} ({role}) {}", index + 1, name_of(index + 1))
+            }))
+            .collect::<Vec<_>>()
+            .join("; ");
+        let messaging = self.team_messages(
+            std::iter::once(&request.lead).chain(request.children.iter().map(|c| &c.preset)),
+        );
         let vars = prompt::PromptVars {
             name: &request.name,
             kind: kind.map_or("work", core::WorkKind::id),
@@ -462,6 +475,10 @@ impl Core {
             brief: brief_path.as_deref().unwrap_or("(no brief)"),
             team: &team,
             plan: &plan,
+            me: &lead_name,
+            lead: &lead_name,
+            peers: &peers,
+            messaging,
             ..prompt::PromptVars::default()
         };
         let caution = if request.read_only {
@@ -478,6 +495,7 @@ impl Core {
         let session = || uuid::Uuid::new_v4().to_string();
         let lead_launch = Launch::new()
             .with_session(session())
+            .with_name(Some(lead_name.clone()))
             .with_prompt(template.map(|t| opening(&t.lead_prompt, &vars)))
             .with_permission(mode_for(&request.lead));
         let lead_role = request.template.as_ref().map(|_| core::AgentRole::Planner);
@@ -487,14 +505,17 @@ impl Core {
             let role_word = role.to_string();
             // Numbered as the panes show them: 1 is the first child.
             let number = (index + 1).to_string();
+            let me = name_of(index + 1);
             let child_vars = prompt::PromptVars {
                 number: &number,
                 role: &role_word,
                 duty: prompt::duty(&role),
+                me: &me,
                 ..vars
             };
             let launch = Launch::new()
                 .with_session(session())
+                .with_name(Some(me.clone()))
                 .with_prompt(template.map(|t| opening(&t.child_prompt, &child_vars)))
                 .with_permission(mode_for(&child.preset));
             registry.start_agent(workspace_id, &child.preset, Some(role), &launch)?;
@@ -518,6 +539,7 @@ impl Core {
         &self,
         registry: &mut Registry,
         work_id: WorkspaceId,
+        work_name: &str,
         saved: &[AgentRow],
     ) -> Result<Vec<core::Agent>, CoreError> {
         // Reopening adds rows, it doesn't replace them.
@@ -531,7 +553,10 @@ impl Core {
         let shell = PresetId::new("shell");
         for agent in latest {
             let preset = agent.preset.as_ref().unwrap_or(&shell);
-            let launch = Launch::new().with_permission(agent.permission);
+            let position = usize::try_from(agent.position).unwrap_or(usize::MAX);
+            let launch = Launch::new()
+                .with_permission(agent.permission)
+                .with_name(Some(core::session_name(work_name, work_id, position)));
             // Claude only saves a session once it gets a message; one that
             // never did starts fresh with the same id instead of failing.
             let launch = match &agent.session_id {
@@ -547,6 +572,17 @@ impl Core {
             .workspace(work_id)
             .map(|w| w.agents().to_vec())
             .unwrap_or_default())
+    }
+
+    /// Whether every one of `presets` runs a program that can message its
+    /// teammates by session name.
+    fn team_messages<'a>(&self, mut presets: impl Iterator<Item = &'a PresetId>) -> bool {
+        let registry = self.registry();
+        presets.all(|id| {
+            registry
+                .preset(id)
+                .is_some_and(|p| p.adapter().messages_peers())
+        })
     }
 
     /// Undoes a start that failed: closes the workspace if it was opened
@@ -777,9 +813,18 @@ mod tests {
         let lead = &info.agents[0];
         let session = lead.session_id.clone().unwrap();
         let command = lead.command.clone().unwrap();
+        let name = core::session_name("fix login", info.id, 0);
         assert!(
-            command.starts_with(&format!("claude --session-id {session} 'You are the lead")),
+            command.starts_with(&format!("claude --name {name} --settings ")),
             "{command}"
+        );
+        assert!(
+            command.contains(&format!("--session-id {session} 'You are the lead")),
+            "{command}"
+        );
+        assert!(
+            command.contains("message each child to start"),
+            "an all-Claude team messages: {command}"
         );
         assert!(
             info.agents[1]
@@ -822,14 +867,19 @@ mod tests {
         let reopened = second.reopen_work(info.id).unwrap();
         assert_eq!(reopened.id, info.id);
         assert_eq!(reopened.agents.len(), 2);
-        assert_eq!(
-            reopened.agents[0].command.as_deref(),
-            Some(format!("claude --resume {session}").as_str())
+        let lead = reopened.agents[0].command.clone().unwrap();
+        assert!(lead.ends_with(&format!(" --resume {session}")), "{lead}");
+        assert!(
+            lead.starts_with(&format!(
+                "claude --name {} ",
+                core::session_name("fix login", info.id, 0)
+            )),
+            "the same name as before: {lead}"
         );
-        assert_eq!(
-            reopened.agents[1].command.as_deref(),
-            Some(format!("claude --session-id {unsent}").as_str()),
-            "a session Claude never saved starts fresh, same id"
+        let child = reopened.agents[1].command.clone().unwrap();
+        assert!(
+            child.ends_with(&format!(" --session-id {unsent}")),
+            "a session Claude never saved starts fresh, same id: {child}"
         );
         assert_eq!(
             second.reopen_work(info.id).unwrap().agents.len(),
@@ -854,6 +904,21 @@ mod tests {
         assert!(core.saved_works(5).is_empty());
         let works_dir = &core.store.as_ref().unwrap().paths().works_dir;
         assert_eq!(std::fs::read_dir(works_dir).unwrap().count(), 0);
+    }
+
+    #[test]
+    fn a_team_that_cant_all_message_coordinates_through_the_plan() {
+        let root = tempfile::tempdir().unwrap();
+        let core = core(root.path());
+        let mut request = fix_request("/tmp/app", String::new());
+        request.voice.clear();
+        request.children[0].preset = "codex".into();
+        let info = core.start_work(request).unwrap();
+        let lead = info.agents[0].command.clone().unwrap();
+        assert!(lead.contains("tell the user the plan is ready"), "{lead}");
+        assert!(!lead.contains("SendMessage"), "{lead}");
+        let child = info.agents[1].command.clone().unwrap();
+        assert!(child.contains("Add one status line"), "{child}");
     }
 
     #[test]
@@ -911,8 +976,8 @@ mod tests {
             .unwrap();
         let command = info.agents[0].command.clone().unwrap();
         assert!(
-            command.starts_with("claude --session-id ") && !command.contains('\''),
-            "{command}"
+            command.starts_with("claude --name makima-") && !command.contains("You are"),
+            "named, with no opening prompt: {command}"
         );
         assert!(!core.works().get(&info.id).unwrap().brief_path().exists());
     }

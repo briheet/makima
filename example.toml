@@ -86,8 +86,10 @@ roles = ["implementer", "researcher"]
 permission = "auto"
 questions = ["The idea", "What would prove it works?"]
 # What each agent is told when the work starts. Placeholders: {name} {kind}
-# {folder} {brief} {plan} {team} {protocol} (how the team works through
-# plan.md), and for children {number} {role} {duty}. Without these,
-# built-in templates use prompts written for their kind.
+# {folder} {brief} {plan} {team} {protocol} (how the lead runs the team:
+# messaging when every agent is Claude Code, else plan.md), {me} {lead}
+# {peers} (session names), and for children {number} {role} {duty}
+# {report} (how a child reports). Without these, built-in templates use
+# prompts written for their kind.
 lead-prompt = "You lead the spike \"{name}\" in {folder}. Read {brief}. Build the smallest thing that answers the brief's question, then report what you learned. {protocol}"
-child-prompt = "You are child {number}, the {role}, on the spike \"{name}\". {duty} Your task will be under \"## child {number}\" in {plan}. Reply only \"ready\" until told to go."
+child-prompt = "You are child {number}, the {role}, on the spike \"{name}\". {duty} Your task will be under \"## child {number}\" in {plan}. Reply only \"ready\" until told to go. {report}"

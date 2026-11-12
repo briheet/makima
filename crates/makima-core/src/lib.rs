@@ -38,6 +38,7 @@ pub use permission::{PermissionFlags, PermissionMode, UnknownPermission};
 pub use preset::{
     AgentPreset, DEFAULT_LEAD, Launch, PresetId, builtin_presets, merge_presets, shell_quote,
 };
+pub use prompt::session_name;
 pub use registry::Registry;
 pub use template::{BriefQuestion, TeamMember, Template, builtin_templates, merge_templates};
 pub use tool::{RESERVED_TOOL_KEYS, Tool, builtin_tools, merge_tools};

@@ -52,14 +52,19 @@ A kind only picks defaults; the form can change the team. Templates live in `mak
 **What agents receive:**
 - **Template work:** the answers and notes go into `brief.md` in the work's folder.
   - Every agent starts with an opening prompt that gives it its job.
-  - **The team coordinates through `plan.md`** next to the brief, because the agents are separate sessions: the lead can't message its children, and they can't see its conversation. This follows [Anthropic's multi-agent research](https://www.anthropic.com/engineering/multi-agent-research-system) and agent-team practice.
-    - The lead plans first. It writes a `## child N` section per child, each with a task, the files it owns (no two tasks share files) and a done-when. It leaves children idle if the work is small, then tells you the plan is ready.
-    - Each child is told its number and role, replies only "ready" until told to go, and then works from its section. It touches only its files, and adds status lines (started, blocked, done) under its section.
-    - Telling everyone to go is `space a` (message everyone).
+  - **The agents are separate sessions** that can't see each other's conversations. `plan.md`, next to the brief, is the team's shared record. This follows [Anthropic's multi-agent research](https://www.anthropic.com/engineering/multi-agent-research-system) and agent-team practice.
+    - The lead plans first. It writes a `## child N` section per child, each with a task, the files it owns (no two tasks share files) and a done-when. It leaves children idle if the work is small.
+    - Each child is told its number and role, replies only "ready" until told to go, and then works from its section, touching only its files.
+  - **When every agent runs Claude Code, the team talks directly** through Claude Code's [cross-session messaging](https://code.claude.com/docs/en/cross-session-messaging):
+    - Makima starts each agent with a session name, `<work>-<id>-lead` or `<work>-<id>-child-N` (the same again on reopen), and `crossSessionInbound = "accept"`, so messages get through whichever permission mode each agent runs in.
+    - The prompts list every session's name. The lead messages each child to start once the plan is written. Children tell the lead when they start, are blocked or are done, and message each other directly, e.g. to ask the reviewer for a review.
+    - A message reaches a busy agent between its tool calls, and an idle one as a new turn. It's marked as from another session, so it can't approve permission prompts.
+    - Agents added later get the next child name; the lead finds them with `ListAgents`.
+  - **Otherwise** (e.g. Codex on the team) the children add status lines (started, blocked, done) under their sections, the lead tells you when the plan is ready, and you tell everyone to go with `space a` (message everyone).
   - Each built-in kind has its own lead prompt. For example, a fix lead is told to reproduce the bug first, find the root cause, make the smallest fix and have the tester prove it.
   - Children get their role and its duty, e.g. a tester writes and runs tests that show the problem, then that it's fixed.
   - Read-only templates add *"Do not modify files."*
-  - Templates can replace both prompts with `lead-prompt` and `child-prompt`, using `{name}` `{kind}` `{folder}` `{brief}` `{plan}` `{team}` (repeats counted, e.g. `lead (claude) + 6 × implementer (claude)`), `{protocol}` (the plan.md rules above), plus `{number}`, `{role}` and `{duty}` for children (see `example.toml`).
+  - Templates can replace both prompts with `lead-prompt` and `child-prompt`, using `{name}` `{kind}` `{folder}` `{brief}` `{plan}` `{team}` (repeats counted, e.g. `lead (claude) + 6 × implementer (claude)`), `{protocol}` (how the lead runs the team, above), `{me}`, `{lead}` and `{peers}` (session names), plus `{number}`, `{role}`, `{duty}` and `{report}` (how a child reports) for children (see `example.toml`).
 - **Quick start:** no brief.
 - **Permissions:** see below.
 - **Sessions:** presets with a session flag (Claude Code: `--session-id`) start with a fresh UUID, saved per agent.

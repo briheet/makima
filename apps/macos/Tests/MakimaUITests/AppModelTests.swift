@@ -47,7 +47,8 @@ import Testing
 
         #expect(workspace.name == "Fix flaky CI")
         #expect(workspace.agents.map(\.name) == ["claude", "claude 2", "claude 3"])
-        #expect(workspace.agents.allSatisfy { $0.command?.hasPrefix("claude --session-id ") == true })
+        #expect(workspace.agents.allSatisfy { $0.command?.hasPrefix("claude --name fix-flaky-ci-") == true })
+        #expect(workspace.agents.allSatisfy { $0.command?.contains(" --session-id ") == true })
         #expect(Set(workspace.agents.compactMap(\.sessionID)).count == 3, "each agent gets its own session")
         #expect(model.selectedAgentID == workspace.agents.first?.id)
     }

@@ -89,6 +89,9 @@ pub struct Launch {
     /// How much the agent may do without asking; `None` is the program's
     /// own default.
     pub permission: Option<PermissionMode>,
+    /// The session's name, which teammates address messages to (see
+    /// [`crate::session_name`]); programs that can't message ignore it.
+    pub name: Option<String>,
 }
 
 impl Launch {
@@ -123,6 +126,12 @@ impl Launch {
     #[must_use]
     pub fn with_permission(mut self, permission: Option<PermissionMode>) -> Self {
         self.permission = permission;
+        self
+    }
+
+    #[must_use]
+    pub fn with_name(mut self, name: Option<String>) -> Self {
+        self.name = name;
         self
     }
 }

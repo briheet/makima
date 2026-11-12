@@ -564,9 +564,10 @@ api-key-env = "OPENAI_API_KEY"  # the key's environment variable; never put the
 # read-only = true              # agents plan only (permission = "plan")
 # permission = "auto"           # the team's mode; default: [permissions]
 # What each agent is told at start. Placeholders: {name} {kind} {folder}
-# {brief} {plan} {team} {protocol}, and for children {number} {role} {duty}.
-# lead-prompt = "You lead \"{name}\" in {folder}. Read {brief}, split it between {team}, and start."
-# child-prompt = "You are the {role}. {duty} Read {brief}, then wait for the lead."
+# {brief} {plan} {team} {protocol} {me} {lead} {peers}, and for children
+# {number} {role} {duty} {report}.
+# lead-prompt = "You lead \"{name}\" in {folder}. Read {brief}, split it between {team}, and start. {protocol}"
+# child-prompt = "You are the {role}. {duty} Read {brief}, then wait for the lead. {report}"
 # questions = ["What to review", "Focus on"]
 "##;
 

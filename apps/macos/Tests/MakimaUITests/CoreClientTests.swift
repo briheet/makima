@@ -26,7 +26,8 @@ import Testing
         let stored = try #require(client.workspaces.first)
         #expect(stored.id == workspace.id)
         #expect(stored.agents == [agent])
-        #expect(agent.command == "claude --session-id \(agent.sessionID ?? "")")
+        #expect(agent.command?.hasPrefix("claude --name auth-") == true, "named for teammates' messages")
+        #expect(agent.command?.hasSuffix("--session-id \(agent.sessionID ?? "")") == true)
         #expect(agent.permission == nil, "no [permissions] configured")
     }
 }

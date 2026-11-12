@@ -256,8 +256,13 @@ impl Core {
             .workspace(workspace_id)
             .and_then(makima_core::Workspace::permission)
             .or_else(|| self.permissions.mode_for(&preset_id));
+        // Named like the team, so it can message and be messaged by it.
+        let name = registry
+            .workspace(workspace_id)
+            .map(|w| makima_core::session_name(w.name().as_str(), workspace_id, w.agents().len()));
         let launch = makima_core::Launch::new()
             .with_session(uuid::Uuid::new_v4().to_string())
+            .with_name(name)
             .with_permission(permission);
         let agent = registry
             .start_agent(workspace_id, &preset_id, None, &launch)?
@@ -473,8 +478,15 @@ mod tests {
         let session = claude.session_id.clone().unwrap();
         assert_eq!(
             claude.command.as_deref(),
-            Some(format!("claude --session-id {session}").as_str()),
-            "children are resumable too"
+            Some(
+                format!(
+                    "claude --name agents-{}-lead --settings '{{\"crossSessionInbound\":\"accept\"}}' \
+                     --session-id {session}",
+                    &ws.id.to_string()[32..]
+                )
+                .as_str()
+            ),
+            "named like the team, and resumable"
         );
 
         let failed = core.record_agent_exit(claude.id, Some(2)).unwrap();
